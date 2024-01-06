@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+##### Constants
+TITLE="System Information for"
+UPDATE="Update on $(date +"%x %r %Z") by $USERNAME"
+
+##### Functions
+system_info()
+{
+	if [ -z TITLE ]; then
+		echo "Title is not empty"
+	else
+		echo "Title is empty"
+	fi
+	return
+}
+show_uptime()
+{
+	echo "<h2>System uptime</h2>"
+	echo "<pre>"
+	uptime
+	echo "</pre>"
+	return
+}
+drive_space()
+{
+	echo "<h2>Filesystem space</h2>"
+	echo "<pre>"
+	df -h
+	echo "</pre>"
+	return
+}
+home_space()
+{
+	echo "<h2>Home directory space by user</h2>"
+	echo "<pre>"
+	echo "Bytes Directory"
+	du -sh /home/* | sort -nr
+	echo "</pre>"
+	return
+}
+cat <<- EOF
+<html>
+<head>
+    <title>
+    $title $USERNAME
+    </title>
+</head>
+
+<body>
+    <h1>$title $USERNAME</h1>
+    <p>$UPDATE</p> 
+    $(system_info)
+    $(show_uptime)
+    $(drive_space)
+    $(home_space)
+</body>
+</html>
+EOF
