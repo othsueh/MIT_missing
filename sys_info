@@ -43,6 +43,15 @@ home_space()
 	echo "</pre>"
 	return
 }
+number_operate()
+{
+	ID=2
+	if [ $ID -eq 2 ]; then
+		echo "ID is two"
+	else
+		echo "ID is "$ID""
+	fi
+}
 cat <<- EOF
 <html>
 <head>
@@ -58,6 +67,7 @@ cat <<- EOF
     $(show_uptime)
     $(drive_space) 
     $(home_space)
+    $(number_operate)
 </body>
 </html>
 EOF
