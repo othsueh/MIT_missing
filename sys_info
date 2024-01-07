@@ -32,6 +32,10 @@ drive_space()
 }
 home_space()
 {
+	if [ "$(id -u)" != "0" ]; then 
+		echo "You must be the superuser to run this script"
+		exit 1
+	fi
 	echo "<h2>Home directory space by user</h2>"
 	echo "<pre>"
 	echo "Bytes Directory"
@@ -52,7 +56,7 @@ cat <<- EOF
     <p>$UPDATE</p> 
     $(system_info)
     $(show_uptime)
-    $(drive_space)
+    $(drive_space) 
     $(home_space)
 </body>
 </html>
