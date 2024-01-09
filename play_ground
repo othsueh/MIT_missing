@@ -1,0 +1,26 @@
+#!/usr/bin/env bash 
+#set -x
+
+press_enter()
+{
+	read -p "Press Enter to continue"
+	clear
+}
+selection=
+while [ "$selection" != "0" ]; do
+	echo "
+    PROGRAM MENU
+    1 - display free disk space
+    2 - display free memory
+
+    0 - exit program
+"
+	read -p "Enter selection: " selection
+	case $selection in
+		1 ) df; press_enter;;
+		2 ) free; press_enter;;
+		0 ) exit ;;
+		* ) echo "Please enter 1, 2, or 0"; press_enter
+	esac
+done
+

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+echo "Positional parameters"
+if [ $# -gt 0 ]; then
+	echo "Your command line contains $# arguments"
+else
+	echo "Your command line contains no arguments"
+fi
+
+while [ "$1" != "" ]; do
+	echo "Paramter 1 equals $1"
+	echo "You now have $# positional parameters"
+	shift
+done
+

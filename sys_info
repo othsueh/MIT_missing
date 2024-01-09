@@ -32,42 +32,90 @@ drive_space()
 }
 home_space()
 {
-	if [ "$(id -u)" != "0" ]; then 
-		echo "You must be the superuser to run this script"
-		exit 1
-	fi
 	echo "<h2>Home directory space by user</h2>"
 	echo "<pre>"
-	echo "Bytes Directory"
-	du -sh /home/* | sort -nr
-	echo "</pre>"
-	return
+	format="%8s%10s%10s   %-s\n"
+	    printf "$format" "Dirs" "Files" "Blocks" "Directory"
+	    printf "$format" "----" "-----" "------" "---------"
+	    if [ $(id -u) = "0" ]; then
+		dir_list="/home/*"
+	    else
+		dir_list=$HOME
+	    fi
+	    for home_dir in $dir_list; do
+		total_dirs=$(find $home_dir -type d | wc -l)
+		total_files=$(find $home_dir -type f | wc -l)
+		total_blocks=$(du -s $home_dir)
+		printf "$format" "$total_dirs" "$total_files" "$total_blocks"
+	    done
+	    echo "</pre>"
+	
 }
-number_operate()
+write_page()
 {
-	ID=2
-	if [ $ID -eq 2 ]; then
-		echo "ID is two"
-	else
-		echo "ID is "$ID""
-	fi
-}
-cat <<- EOF
-<html>
-<head>
-    <title>
-    $title $USERNAME
-    </title>
-</head>
+	cat <<- EOF
+	<html>
+	<head>
+	    <title>
+	    $title $USERNAME
+	    </title>
+	</head>
 
-<body>
-    <h1>$title $USERNAME</h1>
-    <p>$UPDATE</p> 
-    $(system_info)
-    $(show_uptime)
-    $(drive_space) 
-    $(home_space)
-    $(number_operate)
-</body>
-</html>
-EOF
+	<body>
+	    <h1>$title $USERNAME</h1>
+	    <p>$UPDATE</p> 
+	    $(system_info)
+	    $(show_uptime)
+	    $(drive_space) 
+	    $(home_space)
+	</body>
+	</html>
+	EOF
+}
+
+usage()
+{
+	echo "usage: sysinfo_page [[[-f file ] [-i]] | [-h]]"
+}
+
+##### Main
+interactive=
+filename=./sysinfo_page.html
+
+while [ "$1" != "" ]; do
+	case $1 in
+		-f | --file )		shift
+					filename=$1
+					;;
+		-i | --interactive ) 	interactive=1
+					;;
+		-h | --help ) 		usage
+					exit
+					;;
+		* ) 			usage
+					exit 1
+	esac
+	shift
+done
+
+if [ "$interactive" = "1" ]; then
+	response=
+	read -p "Enter name of output file [$filename] > " response
+	if [ -n "$response" ]; then
+		filename="$response"
+	fi
+	if [ -f $filename ]; then
+		echo -n "Output file exists. Overwrite? (y/n) > "
+		read response 
+		if [ "$response" != "y" ];then
+			echo "Exiting program."
+			exit 1
+		fi
+	fi
+else 
+	echo "interactive is off"
+fi
+echo "Output fil = $filename"
+
+# Write page
+write_page > $filename
